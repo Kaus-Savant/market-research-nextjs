@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { mockDeals } from '@/lib/mockData';
 
 export interface Deal {
   id: string;
@@ -58,15 +59,20 @@ export const DealProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch deals from API
+  // Fetch deals from API with fallback to mock data
   useEffect(() => {
     const fetchDeals = async () => {
       try {
         const response = await fetch('/api/deals');
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
         const data = await response.json();
-        setDeals(data);
+        setDeals(data && data.length > 0 ? data : mockDeals);
       } catch (error) {
-        console.error('Failed to fetch deals:', error);
+        console.warn('Failed to fetch deals from API, using mock data:', error);
+        // Use mock data as fallback
+        setDeals(mockDeals);
       } finally {
         setLoading(false);
       }

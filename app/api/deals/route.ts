@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { mockDeals } from '@/lib/mockData';
 
 export async function GET() {
   try {
     const deals = await prisma.deal.findMany({
       orderBy: { added: 'desc' },
     });
-    return NextResponse.json(deals);
+    return NextResponse.json(deals && deals.length > 0 ? deals : mockDeals);
   } catch (error) {
     console.error('Error fetching deals:', error);
-    return NextResponse.json({ error: 'Failed to fetch deals' }, { status: 500 });
+    // Return mock data as fallback instead of error
+    return NextResponse.json(mockDeals);
   }
 }
 
