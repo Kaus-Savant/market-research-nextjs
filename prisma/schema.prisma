@@ -1,0 +1,67 @@
+// SilverX Deal Flow Management - Prisma Schema
+
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Deal {
+  id                String   @id @default(cuid())
+  dealId            String   @unique @default(cuid()) // Display ID like D001, D002, etc.
+  company           String
+  founder           String
+  sector            String
+  cstage            String   // Company stage: Pre-Seed, Seed, Series A, etc.
+  geo               String   // Geography
+  ask               String   // Ask amount
+  source            String   // Source of deal
+  owner             String   // Assigned associate/owner
+  url               String?  // Website/LinkedIn URL
+  summary           String   // Pitch deck/intro summary
+  notes             String?  // Initial notes
+  
+  // Status & Pipeline
+  status            String   @default("New Opportunity") // New Opportunity, Screening, Due Diligence, IC, Invested, Rejected
+  align             String?  // Alignment: High, Medium, Low
+  
+  // Screening stage (Step 2)
+  aiFit             String?  // AI alignment: High, Medium, Low
+  aiRisks           String?  // Key risks from AI screening
+  aiDate            String?  // AI screening date
+  
+  callInsights      String?  // Founder call insights
+  callFlags         String?  // Red flags from call
+  callConviction    String?  // High, Medium, Low
+  callDate          String?  // Founder call date
+  
+  pinGo             String?  // Go / No-Go recommendation
+  pinNotes          String?  // PIN rationale
+  pinDate           String?  // PIN date
+  
+  // Due Diligence stage (Stage 3)
+  ddrMarket         String?  // Market analysis
+  ddrBiz            String?  // Business model
+  ddrTraction       String?  // Traction & metrics
+  ddrFounder        String?  // Founder assessment
+  ddrRisks          String?  // Risks & mitigation
+  ddrDate           String?  // DDR completion date
+  
+  // IC stage (Stage 4)
+  icMemo            String?  // Investment committee memo
+  icDecision        String?  // Term Sheet, Deferred, Rejected at IC
+  icDate            String?  // IC decision date
+  
+  // Rejection tracking
+  rejectedReason    String?  // Reason for rejection
+  rejectedNotes     String?  // Rejection notes
+  rejectedAt        String?  // Stage where rejected (Screening, DD, IC, etc.)
+  
+  // Metadata
+  added             String   // Date added
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
